@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="NCLEX 30">
+<meta name="theme-color" content="#0d9488">
+<title>NCLEX-RN 30-Day Challenge (Nepal)</title>
+<style>
+:root{
+  --bg:#f5f9f9; --card:#ffffff; --text:#0f2a2a; --sub:#5b7373;
+  --accent:#0d9488; --accent2:#0891b2; --ok:#16a34a; --bad:#dc2626;
+  --border:#dfe9e8; --locked:#e5e7eb;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0b1615; --card:#122423; --text:#eaf5f3; --sub:#9fb8b5;
+    --border:#1e3634; --locked:#1a2a29;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0b1615; --card:#122423; --text:#eaf5f3; --sub:#9fb8b5;
+  --border:#1e3634; --locked:#1a2a29;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;-webkit-tap-highlight-color:transparent;}
+header{position:sticky;top:0;z-index:5;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;
+  padding:calc(14px + env(safe-area-inset-top,0px)) 16px 14px;}
+header h1{margin:0;font-size:17px;font-weight:700;}
+header p{margin:2px 0 0;font-size:12.5px;opacity:.9;}
+main{max-width:640px;margin:0 auto;padding:14px 14px 90px;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;}
+.stats{display:flex;gap:10px;overflow-x:auto;}
+.stat{flex:1;min-width:90px;text-align:center;}
+.stat b{display:block;font-size:19px;color:var(--accent);}
+.stat span{font-size:11px;color:var(--sub);}
+.dayGrid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;}
+.day{aspect-ratio:1;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-size:12px;font-weight:600;border:1px solid var(--border);background:var(--bg);cursor:pointer;color:var(--text);}
+.day.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+.day.locked{background:var(--locked);color:var(--sub);}
+.day .pct{font-size:9px;font-weight:400;opacity:.85;}
+.progressBar{height:8px;border-radius:6px;background:var(--locked);overflow:hidden;margin-top:8px;}
+.progressBar i{display:block;height:100%;background:var(--accent);}
+.qmeta{font-size:11px;color:var(--accent);font-weight:700;letter-spacing:.03em;text-transform:uppercase;}
+.qtext{font-size:16px;margin:8px 0 14px;line-height:1.45;}
+.opt{display:block;width:100%;text-align:left;padding:12px 14px;margin-bottom:9px;border-radius:12px;
+  border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14.5px;cursor:pointer;}
+.opt.correct{border-color:var(--ok);background:rgba(22,163,74,.12);}
+.opt.wrong{border-color:var(--bad);background:rgba(220,38,38,.12);}
+.opt:disabled{opacity:.85;}
+.explain{margin-top:10px;padding:12px 14px;border-radius:12px;background:var(--bg);border:1px solid var(--border);font-size:13.5px;line-height:1.5;}
+.explain b{color:var(--accent);}
+.btn{display:inline-block;background:var(--accent);color:#fff;border:none;padding:11px 18px;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;}
+.btn.secondary{background:transparent;color:var(--accent);border:1.5px solid var(--accent);}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--card);border-top:1px solid var(--border);
+  padding:8px 6px calc(8px + env(safe-area-inset-bottom,0px));z-index:5;}
+nav button{flex:1;background:none;border:none;color:var(--sub);font-size:11px;padding:4px;border-radius:10px;}
+nav button.on{color:var(--accent);font-weight:700;}
+h2{font-size:15px;margin:0 0 10px;}
+.small{font-size:12px;color:var(--sub);line-height:1.5;}
+a{color:var(--accent2);}
+.hide{display:none!important;}
+</style>
+</head>
+<body>
+<header>
+  <h1>🩺 NCLEX-RN Prep · 30-Day Challenge</h1>
+  <p>Made for Nepali nursing graduates · Study Smarter, Be NCLEX Ready</p>
+</header>
+<main>
+
+<section id="view-home">
+  <div class="card">
+    <div class="stats">
+      <div class="stat"><b id="s-total">0</b><span>Total Correct</span></div>
+      <div class="stat"><b id="s-day">1</b><span>Current Day</span></div>
+      <div class="stat"><b id="s-unlocked">1</b><span>Days Unlocked</span></div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Your 30 Days</h2>
+    <p class="small">Answer <b>50 questions correctly</b> in a day to unlock the next. Tap a day to practice it.</p>
+    <div class="dayGrid" id="dayGrid"></div>
+  </div>
+  <div class="card">
+    <h2>🇳🇵 NCLEX Resources for Nepal</h2>
+    <p class="small">
+    • <b>CGFNS International</b> handles credentials evaluation for Nepal-educated nurses before NCLEX/US licensure.<br>
+    • <b>NCSBN "Pathway to Practice"</b> (nclex.com) is the official free guide for international candidates.<br>
+    • <b>Prometric</b> now runs Pearson-style Nepal test centers in Kathmandu (Dillibazar, Kumaripati, Bagmati) — check prometric.com for current seats.<br>
+    • Speak with your recruiting/manpower agency about CGFNS CES/CP requirements before registering.<br>
+    <span style="opacity:.75">This app is independent educational practice — not affiliated with NCSBN, CGFNS or Prometric.</span></p>
+  </div>
+</section>
+
+<section id="view-quiz" class="hide">
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <span class="qmeta" id="q-day">Day 1</span>
+      <span class="small" id="q-progress">0 / 50 correct today</span>
+    </div>
+    <div class="progressBar"><i id="q-bar" style="width:0%"></i></div>
+  </div>
+  <div class="card">
+    <span class="qmeta" id="q-cat">Category</span>
+    <div class="qtext" id="q-text"></div>
+    <div id="q-opts"></div>
+    <div id="q-explain" class="explain hide"></div>
+    <div style="margin-top:12px;display:flex;gap:10px;">
+      <button class="btn" id="btn-submit">Submit Answer</button>
+      <button class="btn secondary hide" id="btn-next">Next Question →</button>
+    </div>
+  </div>
+</section>
+
+<section id="view-locked" class="hide">
+  <div class="card" style="text-align:center;">
+    <h2>🔒 Day locked</h2>
+    <p class="small">Reach 50 correct answers on an earlier day to unlock this one. Keep practicing — you can retry questions as many times as you like.</p>
+    <button class="btn" onclick="goHome()">Back to Days</button>
+  </div>
+</section>
+
+</main>
+<nav>
+  <button class="on" id="nav-home" onclick="showHome()">🏠<br>Days</button>
+  <button id="nav-quiz" onclick="openDay(state.day)">📝<br>Practice</button>
+  <button id="nav-reset" onclick="resetProgress()">♻️<br>Reset</button>
+</nav>
+
+<script>
+// ---------- Question bank (original NCLEX-style practice items) ----------
+const QUESTIONS = [
+{cat:"Safety & Infection Control",q:"A client is on airborne precautions for suspected tuberculosis. Which action is the nurse's priority?",o:["Wear a surgical mask before entering the room","Ensure the client is in a negative-pressure room and wear an N95 respirator","Place the client in a semi-private room","Wear a gown and gloves only"],c:1,why:"TB spreads via airborne droplet nuclei, so a negative-pressure room plus a fit-tested N95 respirator is required — a surgical mask does not filter these tiny particles."},
+{cat:"Safety & Infection Control",q:"Which client should the nurse assess first?",o:["Client with a chest tube draining 20 mL/hr serosanguinous fluid","Client 2 hours post-op reporting sudden shortness of breath and chest pain","Client requesting pain medication for a 4/10 incisional pain","Client due for a scheduled dressing change"],c:1,why:"Sudden dyspnea and chest pain post-operatively suggests pulmonary embolism or pneumothorax — an airway/breathing emergency that takes priority using the ABC framework."},
+{cat:"Safety & Infection Control",q:"Which task can the RN safely delegate to unlicensed assistive personnel (UAP)?",o:["Assessing a new post-op client's pain level","Teaching a client how to use an incentive spirometer","Ambulating a stable client who is 2 days post-op hip surgery","Evaluating a client's response to a new antihypertensive"],c:2,why:"Ambulating a stable client is routine care within UAP scope. Assessment, teaching, and evaluation require nursing judgment and remain RN responsibilities."},
+{cat:"Safety & Infection Control",q:"A nurse enters a room to find a client on the floor after a fall. What is the priority action?",o:["Call the physician immediately","Assess the client for injury before moving them","Help the client back into bed right away","Complete an incident report first"],c:1,why:"Safety first: assess for injury (especially head, spine, hip) before any movement to avoid worsening an undetected injury."},
+
+{cat:"Pharmacology",q:"A client receiving heparin has a critically prolonged aPTT. Which antidote should the nurse anticipate?",o:["Vitamin K","Protamine sulfate","Naloxone","Flumazenil"],c:1,why:"Protamine sulfate reverses heparin's anticoagulant effect. Vitamin K reverses warfarin, naloxone reverses opioids, and flumazenil reverses benzodiazepines."},
+{cat:"Pharmacology",q:"Select all findings that indicate digoxin toxicity. (SATA)",o:["Nausea and vomiting","Yellow-green visual halos","Bradycardia","Hypertension","Anorexia"],c:[0,1,2,4],why:"Digoxin toxicity classically causes GI upset, visual disturbances (yellow-green halos), bradycardia, and anorexia — not hypertension."},
+{cat:"Pharmacology",q:"A client is starting lisinopril. Which teaching point is most important?",o:["Take it with a high-potassium sports drink","Report a persistent dry cough to the provider","Expect an increase in blood pressure initially","Avoid all forms of exercise"],c:1,why:"ACE inhibitors like lisinopril commonly cause a persistent dry cough due to bradykinin accumulation; this should be reported, though it isn't usually dangerous."},
+{cat:"Pharmacology",q:"Which lab value must the nurse check before administering a scheduled dose of vancomycin?",o:["Trough vancomycin level","Serum potassium","Platelet count","Fasting glucose"],c:0,why:"Vancomycin is nephrotoxic and ototoxic; trough levels guide safe, effective dosing and help detect early toxicity."},
+{cat:"Pharmacology",q:"A client is prescribed a high-alert medication, insulin. Which action reduces the risk of error?",o:["Round the dose to the nearest 5 units","Have a second nurse independently verify the dose before administration","Administer via IV push routinely","Skip the dose if the client is NPO"],c:1,why:"Independent double-checks are a core high-alert medication safety strategy for insulin to prevent dosing errors."},
+
+{cat:"Maternal & Newborn",q:"A client at 34 weeks gestation reports a severe headache, visual changes, and epigastric pain. Which condition does the nurse suspect?",o:["Normal third-trimester discomfort","Preeclampsia progressing toward eclampsia","Round ligament pain","Braxton Hicks contractions"],c:1,why:"Severe headache, visual disturbance, and epigastric pain are classic warning signs of worsening preeclampsia and impending eclampsia — this requires urgent evaluation."},
+{cat:"Maternal & Newborn",q:"Which finding in a postpartum client 2 hours after vaginal delivery requires immediate intervention?",o:["Fundus firm, midline, at the umbilicus","Boggy fundus with heavy lochia rubra saturating a pad in 15 minutes","Mild afterpains","Lochia rubra, moderate amount"],c:1,why:"A boggy uterus with heavy saturation signals postpartum hemorrhage risk; the nurse should massage the fundus and notify the provider immediately."},
+{cat:"Maternal & Newborn",q:"Place the newborn assessment steps (APGAR) components in the order they are typically summarized.",o:["Appearance, Pulse, Grimace, Activity, Respiration","Pulse, Appearance, Respiration, Grimace, Activity","Activity, Grimace, Pulse, Appearance, Respiration","Respiration, Activity, Pulse, Grimace, Appearance"],c:0,why:"APGAR stands for Appearance, Pulse, Grimace, Activity, Respiration — scored at 1 and 5 minutes after birth."},
+{cat:"Maternal & Newborn",q:"A nurse is caring for a client in active labor with late decelerations. What is the priority action?",o:["Continue routine monitoring","Reposition the client to the left lateral side and administer oxygen","Increase the oxytocin infusion rate","Document and reassess in 1 hour"],c:1,why:"Late decelerations suggest uteroplacental insufficiency. Priority actions improve fetal oxygenation: lateral positioning, oxygen, IV fluids, and stopping oxytocin."},
+
+{cat:"Pediatric Nursing",q:"A 2-year-old is admitted with suspected epiglottitis. Which action should the nurse avoid?",o:["Keeping the child calm and upright","Preparing for possible emergency intubation","Inspecting the throat with a tongue depressor","Keeping emergency airway equipment at bedside"],c:2,why:"Examining the throat can trigger laryngospasm and complete airway obstruction in epiglottitis; visualization should only be done in a controlled setting ready for intubation."},
+{cat:"Pediatric Nursing",q:"Which vaccine schedule statement is correct for a healthy infant per general immunization principles?",o:["Live vaccines are always safe in severely immunocompromised infants","Multiple vaccines can typically be given at the same visit at different sites","All vaccines must be delayed until age 2","Vaccination is unnecessary if the mother was vaccinated"],c:1,why:"Routine childhood immunizations are commonly co-administered at different injection sites during the same visit; live vaccines require caution in immunocompromised children."},
+{cat:"Pediatric Nursing",q:"A child with a congenital heart defect develops sudden cyanosis, agitation, and hyperpnea (a 'tet spell'). What is the priority position?",o:["Supine with legs flat","Knee-to-chest position","Trendelenburg","Prone"],c:1,why:"The knee-to-chest position increases systemic vascular resistance, reducing right-to-left shunting and improving pulmonary blood flow during a hypercyanotic spell."},
+
+{cat:"Mental Health",q:"A client with major depressive disorder states, 'Nothing matters anymore, everyone would be better off without me.' What is the nurse's priority response?",o:["'Try to think positive thoughts.'","'Are you having thoughts of harming yourself?'","'Let's talk about something else.'","'You shouldn't feel that way.'"],c:1,why:"Direct, nonjudgmental questioning about suicidal ideation is essential; it does not increase risk and allows the nurse to assess safety and intervene appropriately."},
+{cat:"Mental Health",q:"Which nursing action best demonstrates therapeutic communication with an anxious client?",o:["Offering false reassurance that everything will be fine","Using open-ended questions and active listening","Changing the subject to distract the client","Giving detailed medical advice"],c:1,why:"Open-ended questions and active listening help the client express feelings and build trust, core principles of therapeutic communication."},
+{cat:"Mental Health",q:"A client in acute mania is admitted. Which environment is most appropriate?",o:["A brightly lit, high-stimulation group activity room","A low-stimulation room with clear, consistent limits","An unrestricted area to allow free movement","A room with a roommate to encourage socialization"],c:1,why:"Clients in mania are highly distractible and overstimulated easily; a low-stimulation environment with firm, consistent limits reduces escalation."},
+
+{cat:"Management of Care",q:"A new graduate nurse asks how to prioritize four assigned clients. Using Maslow's hierarchy, which need takes priority?",o:["Client requesting emotional support after a diagnosis","Client with an oxygen saturation of 88%","Client who wants the TV remote","Client asking about visiting hours"],c:1,why:"Physiological needs (airway/oxygenation) sit at the base of Maslow's hierarchy and take priority over psychosocial or comfort needs."},
+{cat:"Management of Care",q:"Which situation is an appropriate use of informed consent principles by the nurse?",o:["The nurse explains the surgical risks in detail","The nurse witnesses the client's signature after the provider has explained the procedure","The nurse signs consent on behalf of a confused client without a proxy","The nurse skips consent for a routine procedure"],c:1,why:"Obtaining informed consent (explaining risks/benefits) is the provider's responsibility; the nurse's role is typically to witness the signature and verify understanding."},
+{cat:"Management of Care",q:"Arrange these clients in order of priority for the RN to see first (1 = first).",o:["1) New chest pain 2) Stable post-op day 3 3) Scheduled discharge teaching 4) Routine vital signs","1) Routine vital signs 2) New chest pain 3) Discharge teaching 4) Stable post-op","1) Discharge teaching 2) Stable post-op 3) New chest pain 4) Routine vitals","1) Stable post-op 2) Discharge teaching 3) Routine vitals 4) New chest pain"],c:0,why:"Unstable/life-threatening findings like new chest pain are addressed first, followed by stable but needs-monitoring clients, then teaching and routine tasks."},
+
+{cat:"Physiological Adaptation",q:"A client with heart failure gains 2 kg (4.4 lb) in 24 hours. What does this most likely indicate?",o:["Normal daily fluctuation","Fluid retention and worsening heart failure","Increased muscle mass","Dehydration"],c:1,why:"A rapid weight gain of over 1 kg/day in heart failure clients usually reflects fluid retention and worsening decompensation, requiring prompt evaluation."},
+{cat:"Physiological Adaptation",q:"Which arterial blood gas result indicates respiratory acidosis?",o:["pH 7.30, PaCO2 55 mmHg, HCO3 24 mEq/L","pH 7.50, PaCO2 30 mmHg, HCO3 24 mEq/L","pH 7.30, PaCO2 40 mmHg, HCO3 15 mEq/L","pH 7.48, PaCO2 40 mmHg, HCO3 30 mEq/L"],c:0,why:"A low pH with elevated PaCO2 and near-normal bicarbonate reflects uncompensated respiratory acidosis, often from hypoventilation."},
+{cat:"Physiological Adaptation",q:"A client post-thyroidectomy develops tingling around the mouth and muscle twitching. Which complication is suspected?",o:["Hyperthyroidism","Hypocalcemia from parathyroid injury","Hyperkalemia","Hypernatremia"],c:1,why:"Perioral tingling and twitching (Chvostek/Trousseau signs) after thyroidectomy suggest hypocalcemia from accidental parathyroid gland disruption."},
+{cat:"Physiological Adaptation",q:"Which client is at highest risk for developing sepsis-related deterioration and needs the most frequent monitoring?",o:["Stable client with a UTI on oral antibiotics","Client with a temperature of 39.5°C, HR 128, RR 26, and confusion","Client scheduled for routine bloodwork","Client with a healing surgical incision"],c:1,why:"Fever, tachycardia, tachypnea, and altered mental status meet criteria suggestive of sepsis/early septic shock — an unstable, high-risk presentation requiring urgent action."},
+
+{cat:"Basic Care & Comfort",q:"Which nursing action best prevents pressure injuries in an immobile client?",o:["Repositioning every 4 hours","Repositioning at least every 2 hours and using pressure-redistribution surfaces","Massaging reddened bony areas vigorously","Keeping the head of bed at 90 degrees at all times"],c:1,why:"Repositioning at least every 2 hours combined with pressure-redistributing surfaces is the evidence-based standard to prevent pressure injuries; massaging reddened areas can worsen tissue damage."},
+{cat:"Basic Care & Comfort",q:"A client rates postoperative pain as 8/10. Which action should the nurse take first?",o:["Wait until the next scheduled medication time","Administer the prescribed PRN analgesic and reassess","Tell the client to try deep breathing only","Ignore since vital signs are stable"],c:1,why:"Severe reported pain should be treated with the prescribed analgesic promptly, followed by reassessment of effectiveness; pain is a priority even with stable vitals."},
+
+{cat:"Reduction of Risk Potential",q:"Which preoperative finding should the nurse report to the surgeon before a scheduled procedure?",o:["Potassium of 4.0 mEq/L","INR of 3.5 in a client not on anticoagulants","Blood glucose of 110 mg/dL","Hemoglobin of 13.5 g/dL"],c:1,why:"An unexpectedly elevated INR increases bleeding risk during surgery and must be reported and addressed before the procedure."},
+{cat:"Reduction of Risk Potential",q:"A client is receiving a blood transfusion and develops chills, back pain, and hematuria within 15 minutes. What is the priority action?",o:["Slow the infusion rate and monitor","Stop the transfusion immediately and maintain IV access with normal saline","Administer acetaminophen and continue","Document and reassess in 30 minutes"],c:1,why:"These are signs of an acute hemolytic transfusion reaction — a medical emergency. The nurse must stop the transfusion immediately, keep the IV line open with saline, and notify the provider."},
+
+{cat:"Health Promotion",q:"Which statement by a pregnant client indicates a need for further teaching about nutrition?",o:["'I should increase my folic acid intake.'","'I can eat sushi with raw fish as often as I like.'","'I need more iron during pregnancy.'","'I should limit caffeine intake.'"],c:1,why:"Raw fish carries risk of foodborne illness and mercury exposure and should be avoided or limited during pregnancy — this statement shows a need for further teaching."},
+{cat:"Health Promotion",q:"A nurse is teaching a client about hypertension prevention. Which recommendation is most appropriate?",o:["Increase sodium intake for energy","Follow a DASH-style diet, exercise regularly, and limit sodium","Avoid all forms of physical activity","Increase caffeine intake to boost circulation"],c:1,why:"The DASH diet, regular exercise, and sodium restriction are evidence-based strategies for preventing and managing hypertension."},
+
+{cat:"Clinical Judgment",q:"Recognize Cues: A client reports sudden, severe 'worst headache of my life' with neck stiffness. What should the nurse recognize first?",o:["This is likely a routine tension headache","This may indicate a subarachnoid hemorrhage — a neurological emergency","This is a normal stress response","No action is needed unless it persists"],c:1,why:"Sudden, severe 'thunderclap' headache with neck stiffness is a classic red flag for subarachnoid hemorrhage and requires immediate recognition and escalation."},
+{cat:"Clinical Judgment",q:"Take Action: For the client above with suspected subarachnoid hemorrhage, what is the priority nursing action?",o:["Encourage ambulation to relieve tension","Keep the client on strict bed rest, dim lighting, and notify the provider immediately","Give the client caffeine to help the headache","Delay notifying the provider until vitals change"],c:1,why:"Minimizing stimulation, maintaining strict bed rest, and immediate provider notification reduce the risk of rebleeding while urgent imaging/intervention is arranged."},
+{cat:"Clinical Judgment",q:"Evaluate Outcomes: After treatment for hypoglycemia (blood glucose 52 mg/dL), which finding shows the intervention was effective?",o:["Blood glucose remains 52 mg/dL","Blood glucose rises to 90 mg/dL and symptoms resolve","Client becomes more confused","Blood glucose drops further to 40 mg/dL"],c:1,why:"An effective response to hypoglycemia treatment is a rising blood glucose into a safe range along with resolution of symptoms such as confusion or shakiness."},
+
+{cat:"Delegation",q:"Which client is most appropriate for the RN to assign to the LPN/LVN?",o:["A newly admitted client requiring an initial assessment","A stable client requiring a scheduled IM medication","An unstable client requiring continuous titration of vasoactive drips","A client requiring initial patient education on a new diagnosis"],c:1,why:"LPN/LVNs can administer many scheduled medications to stable clients per scope of practice; initial assessments, unstable clients, and initial teaching remain RN responsibilities (scope varies by jurisdiction)."},
+{cat:"Delegation",q:"Which task is appropriate to delegate to unlicensed assistive personnel (UAP)?",o:["Recording routine vital signs on a stable client","Assessing a surgical wound for infection","Administering oral medications","Developing the client's plan of care"],c:0,why:"Routine vital signs on stable clients are within UAP scope; assessment, medication administration, and care planning require licensed nursing judgment."},
+];
+
+// build 10 rotating day-pools from the bank
+const POOLS = [];
+for(let i=0;i<10;i++){ POOLS.push(QUESTIONS.filter((_,idx)=>idx%10===i)); }
+function poolForDay(day){ return POOLS[(day-1)%10]; }
+
+// ---------- State / storage ----------
+const KEY = "nclex30_state_v1";
+let state = { day:1, unlocked:1, dayCorrect:{}, totalCorrect:0 };
+function load(){
+  try{ const raw = localStorage.getItem(KEY); if(raw) state = JSON.parse(raw); }catch(e){ console.warn("storage read failed", e); }
+}
+function save(){
+  try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){ console.warn("storage save failed", e); }
+}
+function resetProgress(){
+  if(!confirm("Reset all progress? This clears your unlocked days and correct-answer counts.")) return;
+  state = { day:1, unlocked:1, dayCorrect:{}, totalCorrect:0 }; save(); renderHome(); showHome();
+}
+
+// ---------- Rendering ----------
+function renderHome(){
+  document.getElementById("s-total").textContent = state.totalCorrect;
+  document.getElementById("s-day").textContent = state.day;
+  document.getElementById("s-unlocked").textContent = state.unlocked;
+  const grid = document.getElementById("dayGrid"); grid.innerHTML="";
+  for(let d=1; d<=30; d++){
+    const el = document.createElement("div");
+    const correct = state.dayCorrect[d]||0;
+    const locked = d > state.unlocked;
+    el.className = "day" + (locked?" locked":"") + (d===state.day?" active":"");
+    el.innerHTML = (locked?"🔒 ":"")+"Day "+d+(locked?"":"<div class='pct'>"+Math.min(correct,50)+"/50</div>");
+    el.onclick = ()=>openDay(d);
+    grid.appendChild(el);
+  }
+}
+function setNav(id){
+  ["nav-home","nav-quiz"].forEach(n=>document.getElementById(n).classList.toggle("on", n===id));
+}
+function showHome(){
+  document.getElementById("view-home").classList.remove("hide");
+  document.getElementById("view-quiz").classList.add("hide");
+  document.getElementById("view-locked").classList.add("hide");
+  setNav("nav-home");
+}
+function goHome(){ showHome(); }
+
+let currentQ = null;
+function openDay(day){
+  if(day > state.unlocked){
+    document.getElementById("view-home").classList.add("hide");
+    document.getElementById("view-quiz").classList.add("hide");
+    document.getElementById("view-locked").classList.remove("hide");
+    return;
+  }
+  state.day = day; save();
+  document.getElementById("view-home").classList.add("hide");
+  document.getElementById("view-locked").classList.add("hide");
+  document.getElementById("view-quiz").classList.remove("hide");
+  setNav("nav-quiz");
+  nextQuestion();
+}
+function nextQuestion(){
+  const pool = poolForDay(state.day);
+  currentQ = pool[Math.floor(Math.random()*pool.length)];
+  document.getElementById("q-day").textContent = "Day "+state.day;
+  document.getElementById("q-cat").textContent = currentQ.cat + " · NCLEX-style practice question";
+  document.getElementById("q-text").textContent = currentQ.q;
+  const correctCt = state.dayCorrect[state.day]||0;
+  document.getElementById("q-progress").textContent = Math.min(correctCt,50)+" / 50 correct today";
+  document.getElementById("q-bar").style.width = Math.min(100,(correctCt/50)*100)+"%";
+  const opts = document.getElementById("q-opts"); opts.innerHTML="";
+  currentQ.o.forEach((text,idx)=>{
+    const b = document.createElement("button");
+    b.className="opt"; b.textContent = text;
+    b.onclick = ()=>selectOpt(idx,b);
+    opts.appendChild(b);
+  });
+  document.getElementById("q-explain").classList.add("hide");
+  document.getElementById("btn-submit").classList.remove("hide");
+  document.getElementById("btn-next").classList.add("hide");
+  window._selected = null;
+}
+function selectOpt(idx, btn){
+  document.querySelectorAll(".opt").forEach(o=>o.classList.remove("sel"));
+  window._selected = idx;
+  document.querySelectorAll(".opt").forEach(o=>o.style.outline="");
+  btn.style.outline = "2px solid var(--accent)";
+}
+document.getElementById("btn-submit").onclick = ()=>{
+  if(window._selected===null || window._selected===undefined){ alert("Select an answer first."); return; }
+  const correctIdx = Array.isArray(currentQ.c) ? currentQ.c : [currentQ.c];
+  const isCorrect = correctIdx.includes(window._selected);
+  document.querySelectorAll(".opt").forEach((o,i)=>{
+    o.disabled = true;
+    if(correctIdx.includes(i)) o.classList.add("correct");
+    else if(i===window._selected) o.classList.add("wrong");
+  });
+  const ex = document.getElementById("q-explain");
+  ex.classList.remove("hide");
+  ex.innerHTML = "<b>"+(isCorrect?"✅ Correct":"❌ Incorrect")+"</b><br><b>Rationale:</b> "+currentQ.why+
+    "<br><b>NCLEX Tip:</b> Use ABC / prioritization / safety-first reasoning to double-check your choice before submitting.";
+  if(isCorrect){
+    state.dayCorrect[state.day] = (state.dayCorrect[state.day]||0) + 1;
+    state.totalCorrect += 1;
+    if(state.dayCorrect[state.day] >= 50 && state.unlocked === state.day && state.unlocked < 30){
+      state.unlocked += 1;
+      ex.innerHTML += "<br><br>🎉 <b>Day "+state.day+" complete — Day "+state.unlocked+" unlocked!</b>";
+    }
+    save();
+  }
+  document.getElementById("btn-submit").classList.add("hide");
+  document.getElementById("btn-next").classList.remove("hide");
+  document.getElementById("q-progress").textContent = Math.min(state.dayCorrect[state.day]||0,50)+" / 50 correct today";
+  document.getElementById("q-bar").style.width = Math.min(100,((state.dayCorrect[state.day]||0)/50)*100)+"%";
+};
+document.getElementById("btn-next").onclick = nextQuestion;
+
+load(); renderHome(); showHome();
+</script>
+</body>
+</html>
